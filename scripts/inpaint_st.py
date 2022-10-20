@@ -120,7 +120,6 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, num_samples=1
                     bchw = [num_samples, 4, h//8, w//8]
                     cc = torch.nn.functional.interpolate(cc, size=bchw[-2:])
                 else:
-                    print(cc.dtype)
                     cc = model.get_first_stage_encoding(model.encode_first_stage(cc))
                 c_cat.append(cc)
             c_cat = torch.cat(c_cat, dim=1)
@@ -149,7 +148,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, num_samples=1
             result = torch.clamp((x_samples_ddim+1.0)/2.0,
                                  min=0.0, max=1.0)
 
-            result = result.cpu().numpy().transpose(0,2,3,1)
+            result = result.float().cpu().numpy().transpose(0,2,3,1)
             result, has_nsfw_concept = check_safety(result)
             result = result*255
 
