@@ -119,10 +119,11 @@ class ResnetBlock(nn.Module):
                                                     padding=0)
 
     def forward(self, x, temb):
+        x = x.float()
         h = x
         h = self.norm1(h)
         h = nonlinearity(h)
-        h = self.conv1(h)
+        h = self.conv1(h).float()
 
         if temb is not None:
             h = h + self.temb_proj(nonlinearity(temb))[:,:,None,None]
@@ -434,7 +435,6 @@ class Encoder(nn.Module):
     def forward(self, x):
         # timestep embedding
         temb = None
-
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):

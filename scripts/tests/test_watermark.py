@@ -1,6 +1,10 @@
 import cv2
 import fire
-from imwatermark import WatermarkDecoder
+try:
+    from imwatermark import WatermarkEncoder
+except ImportError:
+    print('Probably you need to install "invisible-watermark"')
+    raise
 
 
 def testit(img_path):

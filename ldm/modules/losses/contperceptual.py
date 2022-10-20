@@ -1,7 +1,11 @@
 import torch
 import torch.nn as nn
 
-from taming.modules.losses.vqperceptual import *  # TODO: taming dependency yes/no?
+try:
+    from taming.modules.losses.vqperceptual import *  # TODO: taming dependency yes/no?
+except ImportError:
+    print('Probably you need to install "taming-transformers-rom1504"')
+    raise
 
 
 class LPIPSWithDiscriminator(nn.Module):

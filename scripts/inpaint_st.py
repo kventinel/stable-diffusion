@@ -1,9 +1,10 @@
-import sys
+import os, sys
 import numpy as np
 import streamlit as st
 from PIL import Image
 from omegaconf import OmegaConf
 from einops import repeat
+sys.path.append(os.path.abspath(os.path.join(__file__, '..', '..')))
 from main import instantiate_from_config
 from streamlit_drawable_canvas import st_canvas
 import torch
@@ -17,7 +18,11 @@ MAX_SIZE = 640
 # load safety model
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import AutoFeatureExtractor
-from imwatermark import WatermarkEncoder
+try:
+    from imwatermark import WatermarkEncoder
+except ImportError:
+    print('Probably you need to install "invisible-watermark"')
+    raise
 import cv2
 
 safety_model_id = "CompVis/stable-diffusion-safety-checker"
@@ -103,7 +108,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, num_samples=1
     start_code = torch.from_numpy(start_code).to(device=device, dtype=torch.float32)
 
     with torch.no_grad():
-        with torch.autocast("cuda"):
+        with torch.autocast(device.type):
             batch = make_batch_sd(image, mask, txt=prompt, device=device, num_samples=num_samples)
 
             c = model.cond_stage_model.encode(batch["txt"])
@@ -115,6 +120,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, num_samples=1
                     bchw = [num_samples, 4, h//8, w//8]
                     cc = torch.nn.functional.interpolate(cc, size=bchw[-2:])
                 else:
+                    print(cc.dtype)
                     cc = model.get_first_stage_encoding(model.encode_first_stage(cc))
                 c_cat.append(cc)
             c_cat = torch.cat(c_cat, dim=1)

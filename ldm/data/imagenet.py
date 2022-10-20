@@ -10,9 +10,13 @@ from PIL import Image
 from tqdm import tqdm
 from torch.utils.data import Dataset, Subset
 
-import taming.data.utils as tdu
-from taming.data.imagenet import str_to_indices, give_synsets_from_indices, download, retrieve
-from taming.data.imagenet import ImagePaths
+try:
+    import taming.data.utils as tdu
+    from taming.data.imagenet import str_to_indices, give_synsets_from_indices, download, retrieve
+    from taming.data.imagenet import ImagePaths
+except ImportError:
+    print('Probably you need to install "taming-transformers-rom1504"')
+    raise
 
 from ldm.modules.image_degradation import degradation_fn_bsr, degradation_fn_bsr_light
 

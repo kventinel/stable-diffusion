@@ -5,7 +5,11 @@ import numpy as np
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
-from imwatermark import WatermarkEncoder
+try:
+    from imwatermark import WatermarkEncoder
+except ImportError:
+    print('Probably you need to install "invisible-watermark"')
+    raise
 from itertools import islice
 from einops import rearrange
 from torchvision.utils import make_grid
